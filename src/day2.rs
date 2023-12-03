@@ -118,7 +118,6 @@ fn is_game_possible(game: &Game, control: &Vec<Cube>) -> bool {
         for bunch in &game.bunches {
             for cube in bunch {
                 if cube.color == control_cube.color && cube.amount > control_cube.amount {
-                    println!("control: {:?} against {:?}", control_cube, cube);
                     return false
                 }
             }
