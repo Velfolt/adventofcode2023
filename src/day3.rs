@@ -1,5 +1,3 @@
-use std::process::exit;
-
 use crate::read_lines;
 
 fn expand_value(position: (usize, usize), schematic: &Vec<char>, width: usize) -> String {
