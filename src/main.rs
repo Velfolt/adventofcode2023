@@ -2,19 +2,23 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 
 fn main() {
-    day1::day1_1();
-    day1::day1_2();
+    // day1::day1_1();
+    // day1::day1_2();
 
-    day2::day2_1();
-    day2::day2_2();
+    // day2::day2_1();
+    // day2::day2_2();
 
-    day3::day3_1();
-    day3::day3_2();
+    // day3::day3_1();
+    // day3::day3_2();
 
-    day4::day4_1();
-    day4::day4_2();
+    // day4::day4_1();
+    // day4::day4_2();
+
+    // day5::day5_1();
+    // day5::day5_2();
 }
 
 use std::{
