@@ -5,6 +5,7 @@ mod day4;
 mod day5;
 mod day6;
 mod day7;
+mod day8;
 
 fn main() {
     // day1::day1_1();
@@ -25,8 +26,11 @@ fn main() {
     // day6::day6_1();
     // day6::day6_2();
 
-    day7::day7_1();
-    day7::day7_2();
+    // day7::day7_1();
+    // day7::day7_2();
+
+    day8::day8_1();
+    day8::day8_2();
 }
 
 use std::{
