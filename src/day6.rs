@@ -1,14 +1,11 @@
-use std::ops::Range;
+
 
 use nom::{
-    bytes::complete::{tag, take_until, take_while1},
-    character::complete::{alpha1, digit1},
+    bytes::complete::{tag, take_while1},
     combinator::map_res,
     multi::{many0, many1, separated_list1},
-    sequence::tuple,
-    IResult, Parser,
+    IResult,
 };
-use rayon::prelude::*;
 
 use crate::read_lines;
 
