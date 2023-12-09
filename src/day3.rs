@@ -20,7 +20,9 @@ fn expand_value(position: (usize, usize), schematic: &Vec<char>, width: usize) -
         }
     }
 
-    schematic[(position.1 * width + left)..=(position.1 * width + right)].into_iter().collect()
+    schematic[(position.1 * width + left)..=(position.1 * width + right)]
+        .into_iter()
+        .collect()
 }
 
 fn find_part_numbers(symbol: (usize, usize), schematic: &Vec<char>, width: usize) -> Vec<String> {
@@ -41,7 +43,7 @@ fn find_part_numbers(symbol: (usize, usize), schematic: &Vec<char>, width: usize
             values.push(expand_value((x, y), &schematic, width))
         }
     }
-    
+
     values.sort();
     values.dedup();
 
@@ -63,7 +65,10 @@ pub fn day3_1() {
         .flat_map(|(i, _)| find_part_numbers((i % width, i / width), &schematic, width))
         .collect();
 
-    let code: usize = part_numbers.iter().map(|x| x.parse::<usize>().unwrap()).sum();
+    let code: usize = part_numbers
+        .iter()
+        .map(|x| x.parse::<usize>().unwrap())
+        .sum();
 
     dbg!(code);
 }

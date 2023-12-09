@@ -102,8 +102,8 @@ pub fn day8_2() {
         .map(|x| x.to_string())
         .collect();
 
-    let mut step_vec = vec!();
-    
+    let mut step_vec = vec![];
+
     for starting_node in start_nodes.into_iter() {
         let mut steps = 0;
         let mut node = starting_node.clone();
@@ -114,13 +114,17 @@ pub fn day8_2() {
             steps += 1;
 
             if node.ends_with("Z") {
-                break
+                break;
             }
         }
 
         step_vec.push(steps);
     }
 
-    let code: usize = step_vec.iter().map(|x| *x).reduce(|acc, x| lcm(x, acc)).unwrap();
+    let code: usize = step_vec
+        .iter()
+        .map(|x| *x)
+        .reduce(|acc, x| lcm(x, acc))
+        .unwrap();
     dbg!(code);
 }

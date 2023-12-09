@@ -3,7 +3,7 @@ use std::cmp;
 use nom::{
     bytes::complete::{tag, take_until, take_while},
     combinator::map_res,
-    multi::{separated_list0},
+    multi::separated_list0,
     IResult,
 };
 
@@ -118,7 +118,7 @@ fn is_game_possible(game: &Game, control: &Vec<Cube>) -> bool {
         for bunch in &game.bunches {
             for cube in bunch {
                 if cube.color == control_cube.color && cube.amount > control_cube.amount {
-                    return false
+                    return false;
                 }
             }
         }
@@ -154,7 +154,7 @@ pub fn day2_1() {
 }
 
 fn game_max(game: &Game) -> Game {
-    let mut cubes: Vec<Cube> = vec!();
+    let mut cubes: Vec<Cube> = vec![];
 
     for bunch in &game.bunches {
         for cube in bunch {
@@ -166,11 +166,17 @@ fn game_max(game: &Game) -> Game {
         }
     }
 
-    Game { id: game.id, bunches: vec!(cubes) }
+    Game {
+        id: game.id,
+        bunches: vec![cubes],
+    }
 }
 
 fn game_power(game: &Game) -> usize {
-    game.bunches.iter().flat_map(|b| b.iter().map(|c| c.amount)).product()
+    game.bunches
+        .iter()
+        .flat_map(|b| b.iter().map(|c| c.amount))
+        .product()
 }
 
 pub fn day2_2() {

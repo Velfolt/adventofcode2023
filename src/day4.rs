@@ -95,11 +95,12 @@ pub fn day4_2() {
         .map(|line| line.unwrap())
         .map(|line| card(&line.as_str()).unwrap().1)
         .map(|card| CardPrecalculated {
-            card: card.clone(), calculated: card
-            .my_numbers
-            .iter()
-            .filter(|number| card.winning_numbers.contains(number))
-            .count()
+            card: card.clone(),
+            calculated: card
+                .my_numbers
+                .iter()
+                .filter(|number| card.winning_numbers.contains(number))
+                .count(),
         })
         .collect();
 
