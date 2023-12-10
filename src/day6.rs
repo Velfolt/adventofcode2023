@@ -45,7 +45,6 @@ pub fn day6_1() {
                 .filter(|hold| hold * (time - hold) > *distance)
                 .count()
         })
-        .inspect(|x| println!("{:?}", x))
         .product();
 
     dbg!(code);
@@ -97,7 +96,6 @@ pub fn day6_2() {
                 .filter(|hold| hold * (time - hold) > *distance)
                 .count()
         })
-        .inspect(|x| println!("{:?}", x))
         .product();
 
     dbg!(code);
