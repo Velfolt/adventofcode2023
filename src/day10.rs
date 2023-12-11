@@ -1,9 +1,7 @@
 use itertools::Itertools;
 use num::integer::Roots;
 
-use crate::read_lines;
-
-type Vec2 = (usize, usize);
+use crate::{read_lines, Vec2};
 
 #[derive(Debug, PartialEq)]
 enum Direction {

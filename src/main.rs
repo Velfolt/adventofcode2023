@@ -8,6 +8,7 @@ mod day7;
 mod day8;
 mod day9;
 mod day10;
+mod day11;
 
 fn main() {
     day1::day1_1();
@@ -39,6 +40,9 @@ fn main() {
 
     day10::day10_1();
     day10::day10_2();
+
+    day11::day11_1();
+    day11::day11_2();
 }
 
 use std::{
@@ -49,4 +53,10 @@ use std::{
 pub fn read_lines(filename: &str) -> io::Lines<io::BufReader<File>> {
     let file = File::open(filename).unwrap();
     io::BufReader::new(file).lines()
+}
+
+pub type Vec2 = (usize, usize);
+
+pub fn manhattan_distance(a: &Vec2, b: &Vec2) -> usize {
+    (a.0 as i64 - b.0 as i64).abs() as usize + (a.1 as i64 - b.1 as i64).abs() as usize
 }
