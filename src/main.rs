@@ -11,6 +11,7 @@ mod day10;
 mod day11;
 mod day12;
 mod day13;
+mod day14;
 
 fn main() {
     // day1::day1_1();
@@ -48,14 +49,20 @@ fn main() {
 
     // day12::day12_1();
 
-    day13::day13_1();
-    day13::day13_2();
+    // day13::day13_1();
+    // day13::day13_2();
+
+    day14::day14_1();
+    day14::day14_2();
 }
 
 use std::{
     fs::File,
-    io::{self, BufRead},
+    io::{self, BufRead}, collections::HashSet,
+    hash::Hash
 };
+
+use itertools::Itertools;
 
 pub fn read_lines(filename: &str) -> io::Lines<io::BufReader<File>> {
     let file = File::open(filename).unwrap();
@@ -66,4 +73,41 @@ pub type Vec2 = (usize, usize);
 
 pub fn manhattan_distance(a: &Vec2, b: &Vec2) -> usize {
     (a.0 as i64 - b.0 as i64).abs() as usize + (a.1 as i64 - b.1 as i64).abs() as usize
+}
+
+#[derive(Debug, Clone)]
+pub struct Grid {
+    grid: Vec<char>,
+    width: usize,
+}
+
+impl Grid {
+    pub fn new(input: &str) -> Grid {
+        let width = input.find("\n").unwrap();
+
+        Grid {
+            grid: input.chars().filter(|c| *c != '\n').collect_vec(),
+            width,
+        }
+    }
+
+    pub fn print(&self) {
+        for (i, tile) in self.grid.iter().enumerate() {
+            if i % self.width == 0 {
+                print!("\n");
+            }
+
+            print!("{}", tile);
+        }
+        println!();
+    }
+}
+
+pub fn has_unique_elements<T>(iter: T) -> bool
+where
+    T: IntoIterator,
+    T::Item: Eq + Hash,
+{
+    let mut uniq = HashSet::new();
+    iter.into_iter().all(move |x| uniq.insert(x))
 }
