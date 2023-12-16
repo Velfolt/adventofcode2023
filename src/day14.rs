@@ -2,14 +2,14 @@ use core::panic;
 
 use itertools::Itertools;
 
-use crate::{read_lines, Grid};
+use crate::{read_lines, grid::Grid};
 
 impl Grid {
     fn tilt_step(&mut self, direction: (i64, i64)) -> bool {
         let mut changed = false;
 
         for (i, _) in self
-            .grid
+            .data
             .clone()
             .iter()
             .enumerate()
@@ -30,7 +30,7 @@ impl Grid {
                 continue;
             }
 
-            let grid = &mut self.grid;
+            let grid = &mut self.data;
             let tilted = grid
                 .get_mut(tilted_pos.1 as usize * self.width as usize + tilted_pos.0 as usize)
                 .unwrap();
@@ -54,7 +54,7 @@ impl Grid {
     }
 
     fn load(&self) -> usize {
-        self.grid
+        self.data
             .clone()
             .iter()
             .enumerate()

@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use num::integer::Roots;
 
-use crate::{read_lines, Vec2};
+use crate::{read_lines, Vec2, grid::{Grid, GridWalk}};
 
 #[derive(Debug, PartialEq)]
 enum Direction {
@@ -11,7 +11,7 @@ enum Direction {
     West,
 }
 
-fn direction_to_pos(direction: &Direction, position: Vec2) -> Vec2 {
+fn direction_to_pos(direction: &Direction, position: Vec2<usize>) -> Vec2<usize> {
     match direction {
         Direction::North => (position.0, position.1 - 1),
         Direction::South => (position.0, position.1 + 1),
@@ -20,7 +20,7 @@ fn direction_to_pos(direction: &Direction, position: Vec2) -> Vec2 {
     }
 }
 
-fn is_reachable(pos: Vec2, from: Vec2, map: &Vec<char>, side: usize) -> bool {
+fn is_reachable(pos: Vec2<usize>, from: Vec2<usize>, map: &Vec<char>, side: usize) -> bool {
     if let Some(tile) = map.get(pos.1 * side + pos.0) {
         let direction = match (pos.0 as i64 - from.0 as i64, pos.1 as i64 - from.1 as i64) {
             (0, 1) => Direction::North,
@@ -56,10 +56,10 @@ fn tile_directions(tile: char) -> Vec<Direction> {
 }
 
 fn step_pipe(
-    position: Vec2,
+    position: Vec2<usize>,
     map: &Vec<char>,
     side: usize,
-) -> Vec<Vec2> {
+) -> Vec<Vec2<usize>> {
     let directions_to_consider = tile_directions(map[position.1 * side + position.0]);
 
     directions_to_consider
@@ -69,7 +69,7 @@ fn step_pipe(
         .collect_vec()
 }
 
-fn walk_pipe(start_position: Vec2,
+fn walk_pipe(start_position: Vec2<usize>,
     map: &Vec<char>,
     side: usize) -> Vec<(usize, usize)> {
     let mut history = vec!(start_position);
@@ -91,7 +91,7 @@ fn walk_pipe(start_position: Vec2,
     history
 }
 
-fn find_start_pos(map: &Vec<char>, side: usize) -> Vec2 {
+fn find_start_pos(map: &Vec<char>, side: usize) -> Vec2<usize> {
     let start_pos = map
         .iter()
         .enumerate()
@@ -103,20 +103,20 @@ fn find_start_pos(map: &Vec<char>, side: usize) -> Vec2 {
 }
 
 pub fn day10_1() {
-    let map = read_lines("inputs/day10.txt")
-        .map(|line| line.unwrap())
+    let map: String = read_lines("inputs/day10.txt")
+        .map(|line| line.unwrap() + "\n")
         .flat_map(|line| line.chars().collect_vec())
-        .collect_vec();
+        .collect();
 
-    let side = map.len().sqrt();
-    let start_pos = find_start_pos(&map, side);
-    let path = walk_pipe(start_pos, &map, side);
+    let mut grid = Grid::new(&map);
+    let start_pos = find_start_pos(&grid.data, grid.width);
+    let path = grid.walk(&start_pos, |grid, pos| { step_pipe(*pos, &grid.data, grid.width)});
     let farthest_from_starting_pos = path.len() / 2;
 
     dbg!(farthest_from_starting_pos);
 }
 
-fn enclosed_by_even_odd_rule(pos: Vec2, path: &Vec<Vec2>) -> bool {
+fn enclosed_by_even_odd_rule(pos: Vec2<usize>, path: &Vec<Vec2<usize>>) -> bool {
     let num = path.len();
     let mut j = num - 1;
     let mut c = false;
@@ -146,37 +146,16 @@ fn enclosed_by_even_odd_rule(pos: Vec2, path: &Vec<Vec2>) -> bool {
     c
 }
 
-// fn print_map(map: &Vec<char>, side: usize, path: &Vec<Vec2>) {
-//     for (i, tile) in map.iter().enumerate() {
-//         if i % side == 0 {
-//             print!("\n");
-//         }
-
-//         if !path.contains(&(i % side, i / side)) {
-//             if enclosed_by_even_odd_rule((i % side, i / side), &path) {
-//                 print!("I");
-//             } else {
-//                 print!("O");
-//             }
-//         } else {
-//             print!("{}", tile);
-//         }
-//     }
-//     println!();
-// }
-
 pub fn day10_2() {
-    let map = read_lines("inputs/day10.txt")
-        .map(|line| line.unwrap())
+    let map: String = read_lines("inputs/day10.txt")
+        .map(|line| line.unwrap() + "\n")
         .flat_map(|line| line.chars().collect_vec())
-        .collect_vec();
+        .collect();
 
-    let side = map.len().sqrt();
-    let start_pos = find_start_pos(&map, side);
-    let path = walk_pipe(start_pos, &map, side);
-    
-    // print_map(&map, side, &path);
+    let mut grid = Grid::new(&map);
+    let start_pos = find_start_pos(&grid.data, grid.width);
+    let path = grid.walk(&start_pos, |grid, pos| { step_pipe(*pos, &grid.data, grid.width)});
 
-    let enclosed_tiles = map.iter().enumerate().filter(|(i, _)| !path.contains(&(i % side, i / side)) && enclosed_by_even_odd_rule((i % side, i / side), &path)).count();
+    let enclosed_tiles = grid.data.iter().enumerate().filter(|(i, _)| !path.contains(&(i % grid.width, i / grid.width)) && enclosed_by_even_odd_rule((i % grid.width, i / grid.width), &path)).count();
     dbg!(enclosed_tiles);
 }

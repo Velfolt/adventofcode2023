@@ -15,7 +15,7 @@ impl Map {
         Map { map, width }
     }
 
-    fn expand(&mut self, amount: usize) -> Vec<Vec2> {
+    fn expand(&mut self, amount: usize) -> Vec<Vec2<i64>> {
         let rows_to_add = (0..self.width).filter(|row| (0..self.width).all(|x| self.map[row * self.width + x] == '.')).collect_vec();
         let cols_to_add = (0..self.width).filter(|col| (0..self.width).all(|y| self.map[y * self.width + col] == '.')).collect_vec();
 
@@ -33,7 +33,7 @@ impl Map {
                 let x = ((i % self.width) + (cols * amount)) % new_width;
                 let y = (i / self.width) + rows * amount;
 
-                (x, y)
+                (x as i64, y as i64)
             })
             .collect_vec()
     }
@@ -46,7 +46,7 @@ pub fn day11_1() {
         .collect_vec();
 
     let mut map = Map::new(map);
-    let pairs: usize = map.expand(1).iter()
+    let pairs: i64 = map.expand(1).iter()
         .combinations(2)
         .map(|combinations| manhattan_distance(&combinations[0], &combinations[1]))
         .sum();
@@ -61,7 +61,7 @@ pub fn day11_2() {
         .collect_vec();
 
     let mut map = Map::new(map);
-    let pairs: usize = map.expand(1_000_000 - 1).iter()
+    let pairs: i64 = map.expand(1_000_000 - 1).iter()
         .combinations(2)
         .map(|combinations| manhattan_distance(&combinations[0], &combinations[1]))
         .sum();

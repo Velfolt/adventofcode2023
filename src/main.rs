@@ -1,3 +1,5 @@
+mod grid;
+
 mod day1;
 mod day2;
 mod day3;
@@ -13,6 +15,7 @@ mod day12;
 mod day13;
 mod day14;
 mod day15;
+mod day16;
 
 fn main() {
     // day1::day1_1();
@@ -42,8 +45,8 @@ fn main() {
     // day9::day9_1();
     // day9::day9_2();
 
-    // day10::day10_1();
-    // day10::day10_2();
+    day10::day10_1();
+    day10::day10_2();
 
     // day11::day11_1();
     // day11::day11_2();
@@ -56,8 +59,11 @@ fn main() {
     // day14::day14_1();
     // day14::day14_2();
 
-    day15::day15_1();
-    day15::day15_2();
+    // day15::day15_1();
+    // day15::day15_2();
+
+    // day16::day16_1();
+    // day16::day16_2();
 }
 
 use std::{
@@ -66,45 +72,17 @@ use std::{
     hash::Hash
 };
 
-use itertools::Itertools;
+use num::{Zero, Signed};
 
 pub fn read_lines(filename: &str) -> io::Lines<io::BufReader<File>> {
     let file = File::open(filename).unwrap();
     io::BufReader::new(file).lines()
 }
 
-pub type Vec2 = (usize, usize);
+pub type Vec2<T> = (T, T);
 
-pub fn manhattan_distance(a: &Vec2, b: &Vec2) -> usize {
-    (a.0 as i64 - b.0 as i64).abs() as usize + (a.1 as i64 - b.1 as i64).abs() as usize
-}
-
-#[derive(Debug, Clone)]
-pub struct Grid {
-    grid: Vec<char>,
-    width: usize,
-}
-
-impl Grid {
-    pub fn new(input: &str) -> Grid {
-        let width = input.find("\n").unwrap();
-
-        Grid {
-            grid: input.chars().filter(|c| *c != '\n').collect_vec(),
-            width,
-        }
-    }
-
-    pub fn print(&self) {
-        for (i, tile) in self.grid.iter().enumerate() {
-            if i % self.width == 0 {
-                print!("\n");
-            }
-
-            print!("{}", tile);
-        }
-        println!();
-    }
+pub fn manhattan_distance<T: Zero + Signed + Copy + PartialOrd + std::ops::Sub>(a: &Vec2<T>, b: &Vec2<T>) -> T {
+    (a.0 - b.0).abs() + (a.1 - b.1).abs()
 }
 
 pub fn has_unique_elements<T>(iter: T) -> bool
