@@ -2,7 +2,7 @@ use core::panic;
 
 use itertools::Itertools;
 
-use crate::{read_lines, grid::Grid};
+use crate::{read_lines, grid::{Grid, ToGrid}};
 
 impl Grid {
     fn tilt_step(&mut self, direction: (i64, i64)) -> bool {
@@ -69,12 +69,7 @@ impl Grid {
 }
 
 pub fn day14_1() {
-    let input: String = read_lines("inputs/day14.txt")
-        .map(|line| line.unwrap() + "\n")
-        .flat_map(|line| line.chars().collect_vec())
-        .collect();
-
-    let mut grid = Grid::new(&input);
+    let mut grid = read_lines("inputs/day14.txt").to_grid();
 
     let direction = (0, 1);
 
@@ -113,12 +108,7 @@ fn find_cycle(loads: &[usize]) -> (usize, &[usize])
 }
 
 pub fn day14_2() {
-    let input: String = read_lines("inputs/day14.txt")
-        .map(|line| line.unwrap() + "\n")
-        .flat_map(|line| line.chars().collect_vec())
-        .collect();
-
-    let mut grid = Grid::new(&input);
+    let mut grid = read_lines("inputs/day14.txt").to_grid();
 
     let loads = (0..1000)
         .map(|_| {

@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use num::integer::Roots;
 
-use crate::{read_lines, Vec2, grid::{Grid, GridWalk}};
+use crate::{read_lines, Vec2, grid::{Grid, GridWalk, ToGrid}};
 
 #[derive(Debug, PartialEq)]
 enum Direction {
@@ -103,12 +103,8 @@ fn find_start_pos(map: &Vec<char>, side: usize) -> Vec2<usize> {
 }
 
 pub fn day10_1() {
-    let map: String = read_lines("inputs/day10.txt")
-        .map(|line| line.unwrap() + "\n")
-        .flat_map(|line| line.chars().collect_vec())
-        .collect();
-
-    let mut grid = Grid::new(&map);
+    let mut grid = read_lines("inputs/day10.txt").to_grid();
+    
     let start_pos = find_start_pos(&grid.data, grid.width);
     let path = grid.walk(&start_pos, |grid, pos| { step_pipe(*pos, &grid.data, grid.width)});
     let farthest_from_starting_pos = path.len() / 2;
@@ -147,12 +143,8 @@ fn enclosed_by_even_odd_rule(pos: Vec2<usize>, path: &Vec<Vec2<usize>>) -> bool 
 }
 
 pub fn day10_2() {
-    let map: String = read_lines("inputs/day10.txt")
-        .map(|line| line.unwrap() + "\n")
-        .flat_map(|line| line.chars().collect_vec())
-        .collect();
+    let mut grid = read_lines("inputs/day10.txt").to_grid();
 
-    let mut grid = Grid::new(&map);
     let start_pos = find_start_pos(&grid.data, grid.width);
     let path = grid.walk(&start_pos, |grid, pos| { step_pipe(*pos, &grid.data, grid.width)});
 

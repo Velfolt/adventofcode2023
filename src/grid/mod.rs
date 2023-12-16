@@ -1,10 +1,26 @@
-use std::ops::Add;
+use std::{ops::Add, io::{BufRead, Lines}};
 
 use itertools::Itertools;
 
 use crate::Vec2;
 
+pub trait ToGrid {
+    fn to_grid(self) -> Grid;
+}
 
+impl<B: BufRead> ToGrid for Lines<B> {
+    fn to_grid(self) -> Grid
+    where
+        Self: Sized,
+    {
+        let input: String = self
+            .map(|line| line.unwrap() + "\n")
+            .flat_map(|line| line.chars().collect_vec())
+            .collect();
+
+        Grid::new(&input)
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct Grid {
