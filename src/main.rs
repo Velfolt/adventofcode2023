@@ -1,4 +1,5 @@
 mod grid;
+mod aoc_iteratorutils;
 
 mod day1;
 mod day2;
@@ -45,8 +46,8 @@ fn main() {
     // day9::day9_1();
     // day9::day9_2();
 
-    day10::day10_1();
-    day10::day10_2();
+    // day10::day10_1();
+    // day10::day10_2();
 
     // day11::day11_1();
     // day11::day11_2();
@@ -62,8 +63,8 @@ fn main() {
     // day15::day15_1();
     // day15::day15_2();
 
-    // day16::day16_1();
-    // day16::day16_2();
+    day16::day16_1();
+    day16::day16_2();
 }
 
 use std::{
