@@ -1,8 +1,14 @@
-use std::{ops::Add, io::{BufRead, Lines}};
+use core::panic;
+use std::{
+    collections::{HashMap, HashSet, BinaryHeap},
+    fmt::Debug,
+    io::{BufRead, Lines},
+    ops::Add, cmp::Reverse,
+};
 
 use itertools::Itertools;
 
-use crate::Vec2;
+use crate::{aoc_iteratorutils::AdventOfCodeIteratorUtils, Vec2};
 
 pub trait ToGrid {
     fn to_grid(self) -> Grid;
@@ -75,7 +81,7 @@ pub trait GridWalk<T> {
     fn walk<F: FnMut(&Self, &Vec2<T>) -> Vec<Vec2<T>>>(
         &mut self,
         start_pos: &Vec2<T>,
-        step: F
+        step: F,
     ) -> Vec<Vec2<T>>;
 }
 
@@ -83,7 +89,7 @@ impl<T: GridBounds<VecT>, VecT: Copy + PartialEq> GridWalk<VecT> for T {
     fn walk<F: FnMut(&Self, &Vec2<VecT>) -> Vec<Vec2<VecT>>>(
         &mut self,
         start_pos: &Vec2<VecT>,
-        mut step: F
+        mut step: F,
     ) -> Vec<Vec2<VecT>> {
         let mut visited = vec![];
 
@@ -95,10 +101,7 @@ impl<T: GridBounds<VecT>, VecT: Copy + PartialEq> GridWalk<VecT> for T {
 
             let positions = step(&self, &pos);
 
-            for position in positions
-                .iter()
-                .filter(|&&pos| self.in_bounds(&pos))
-            {
+            for position in positions.iter().filter(|&&pos| self.in_bounds(&pos)) {
                 if visited.iter().find(|vis| **vis == *position) == None {
                     next_positions.push(*position);
                 }
@@ -119,7 +122,9 @@ pub trait GridWalkWithDirection<VecT> {
     ) -> Vec<(Vec2<VecT>, Vec2<VecT>)>;
 }
 
-impl<T: GridBounds<VecT>, VecT: PartialEq + Copy + Add<Output = VecT>> GridWalkWithDirection<VecT> for T {
+impl<T: GridBounds<VecT>, VecT: PartialEq + Copy + Add<Output = VecT>> GridWalkWithDirection<VecT>
+    for T
+{
     fn walk_with_direction(
         &mut self,
         start_pos: &Vec2<VecT>,
@@ -176,5 +181,116 @@ impl GridBounds<usize> for Grid {
         } else {
             true
         }
+    }
+}
+
+impl GridBounds<i32> for Grid {
+    fn in_bounds(&self, pos: &Vec2<i32>) -> bool {
+        if pos.0 < 0 || pos.0 >= self.width as i32 {
+            false
+        } else if pos.1 < 0 || pos.1 >= self.data.len() as i32 / self.width as i32 {
+            false
+        } else {
+            true
+        }
+    }
+}
+
+pub trait GridGet<VecT> {
+    fn get(&self, pos: &Vec2<VecT>) -> char;
+}
+
+impl GridGet<usize> for Grid {
+    fn get(&self, pos: &Vec2<usize>) -> char {
+        self.data[pos.1 * self.width + pos.0]
+    }
+}
+
+impl GridGet<i64> for Grid {
+    fn get(&self, pos: &Vec2<i64>) -> char {
+        self.data[pos.1 as usize * self.width + pos.0 as usize]
+    }
+}
+
+pub trait GridAStar<VecT> {
+    fn a_star(
+        &mut self,
+        start_pos: &Vec2<VecT>,
+        end_pos: &Vec2<VecT>,
+        max: &VecT,
+        neighbours: impl FnMut(&Self, &Vec2<VecT>, &HashMap<Vec2<VecT>, Vec2<VecT>>) -> Vec<Vec2<VecT>>,
+        heur: impl Fn(&Self, &Vec2<VecT>, &HashMap<Vec2<VecT>, Vec2<VecT>>) -> VecT,
+        distance: impl Fn(&Self, &Vec2<VecT>, &Vec2<VecT>) -> VecT,
+    ) -> Vec<Vec2<VecT>>;
+}
+
+impl<
+        T: GridBounds<VecT>,
+        VecT: PartialEq + Copy + Add<Output = VecT> + Ord + Debug + std::hash::Hash + Default,
+    > GridAStar<VecT> for T
+{
+    fn a_star(
+        &mut self,
+        start_pos: &Vec2<VecT>,
+        end_pos: &Vec2<VecT>,
+        max: &VecT,
+        mut neighbours: impl FnMut(
+            &Self,
+            &Vec2<VecT>,
+            &HashMap<Vec2<VecT>, Vec2<VecT>>,
+        ) -> Vec<Vec2<VecT>>,
+        heur: impl Fn(&Self, &Vec2<VecT>, &HashMap<Vec2<VecT>, Vec2<VecT>>) -> VecT,
+        distance: impl Fn(&Self, &Vec2<VecT>, &Vec2<VecT>) -> VecT,
+    ) -> Vec<Vec2<VecT>> {
+        let mut open_set = HashSet::new();
+        open_set.insert(*start_pos);
+
+        let mut came_from: HashMap<Vec2<VecT>, Vec2<VecT>> = HashMap::new();
+
+        let mut g_score: HashMap<Vec2<VecT>, VecT> = HashMap::new();
+        g_score.insert(*start_pos, Default::default());
+
+        let mut f_score = HashMap::new();
+        f_score.insert(*start_pos, heur(&self, start_pos, &came_from));
+
+        while !open_set.is_empty() {
+            let (mut current, _) = open_set
+                .clone()
+                .into_iter()
+                .map(|pos| (pos, f_score.get(&pos).map_or(*max, |x| *x)))
+                .min_by(|(_, a), (_, b)| a.cmp(b))
+                .unwrap();
+
+            if current == *end_pos {
+                let mut total_path = vec![current];
+                while came_from.contains_key(&current) {
+                    current = came_from[&current];
+                    total_path.insert(0, current);
+                }
+                return total_path;
+            }
+
+            open_set.remove(&current);
+
+            for neighbour in neighbours(&self, &current, &came_from) {
+                let tentative_g_score = g_score[&current] + distance(&self, &current, &neighbour);
+
+                if !g_score.contains_key(&neighbour)
+                    || tentative_g_score < g_score.get(&neighbour).map_or(*max, |x| *x)
+                {
+                    came_from.insert(neighbour, current);
+                    g_score.insert(neighbour, tentative_g_score);
+                    f_score.insert(
+                        neighbour,
+                        tentative_g_score + heur(&self, &neighbour, &came_from),
+                    );
+                    if !open_set.contains(&neighbour) {
+                        open_set.insert(neighbour);
+                    }
+                }
+            }
+        }
+
+        panic!()
     }
 }
