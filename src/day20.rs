@@ -1,9 +1,5 @@
-use std::{
-    collections::{HashMap, HashSet, VecDeque},
-    iter,
-};
+use std::collections::{HashMap, HashSet, VecDeque};
 
-use itertools::Itertools;
 use nom::{
     bytes::complete::{tag, take_while1},
     character::complete::one_of,
@@ -14,7 +10,7 @@ use nom::{
 };
 use num::Integer;
 
-use crate::{aoc_iteratorutils::AdventOfCodeIteratorUtils, read_lines};
+use crate::read_lines;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum PulseType {
@@ -174,10 +170,10 @@ pub fn day20_2() {
         .collect();
 
     let mut set = HashSet::new();
-    
+
     // taken from my input - all the modules that lead to rx
     let modules_to_investigate = ["st", "tn", "hh", "dt"];
-    
+
     for module in modules_to_investigate {
         let mut counter = 0_usize;
 
@@ -192,7 +188,7 @@ pub fn day20_2() {
                 vec!["broadcaster"],
             ),
         );
-        
+
         let lookup = modules.clone();
         for (name, (module, _)) in modules.iter_mut() {
             if let ModuleType::Conjunction(memory) = &mut module.module_type {
@@ -246,9 +242,9 @@ pub fn day20_2() {
                             }
                         }
                     } {
-                        destinations.iter().for_each(|name| {
-                            pulses.push_back((*name, new_pulse, module_name))
-                        });
+                        destinations
+                            .iter()
+                            .for_each(|name| pulses.push_back((*name, new_pulse, module_name)));
                     }
                 }
             }
