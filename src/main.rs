@@ -21,6 +21,7 @@ mod day17;
 mod day18;
 mod day19;
 mod day20;
+mod day21;
 
 fn main() {
     // day1::day1_1();
@@ -79,8 +80,11 @@ fn main() {
     // day19::day19_1();
     // day19::day19_2();
 
-    day20::day20_1();
-    day20::day20_2();
+    // day20::day20_1();
+    // day20::day20_2();
+
+    day21::day21_1();
+    day21::day21_2();
 }
 
 use std::{

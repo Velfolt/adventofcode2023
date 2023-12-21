@@ -1,9 +1,11 @@
 use core::panic;
 use std::{
-    collections::{HashMap, HashSet, BinaryHeap},
+    cmp::Reverse,
+    collections::{BinaryHeap, HashMap, HashSet},
     fmt::Debug,
     io::{BufRead, Lines},
-    ops::Add, cmp::Reverse,
+    num::TryFromIntError,
+    ops::Add,
 };
 
 use itertools::Itertools;
@@ -32,6 +34,7 @@ impl<B: BufRead> ToGrid for Lines<B> {
 pub struct Grid {
     pub data: Vec<char>,
     pub width: usize,
+    pub height: usize,
 }
 
 pub trait GridPrinter {
@@ -58,6 +61,7 @@ impl Grid {
         Grid {
             data: input.chars().filter(|c| *c != '\n').collect_vec(),
             width,
+            height: width
         }
     }
 
@@ -292,5 +296,34 @@ impl<
         }
 
         panic!()
+    }
+}
+
+pub trait GridFindPosition {
+    fn find_pos<VecT>(&self, tile: &char) -> Result<Vec2<VecT>, <VecT as TryFrom<usize>>::Error>
+    where
+        VecT: TryFrom<usize>;
+}
+
+impl GridFindPosition for Grid {
+    fn find_pos<VecT>(&self, tile: &char) -> Result<Vec2<VecT>, <VecT as TryFrom<usize>>::Error>
+    where
+        VecT: TryFrom<usize>,
+    {
+        let start_pos = self
+            .data
+            .iter()
+            .enumerate()
+            .find(|(_, &pipe)| pipe == *tile)
+            .unwrap()
+            .0;
+
+        let x = (start_pos % self.width).try_into()?;
+        let y = (start_pos / self.width).try_into()?;
+
+        Ok((
+            x,
+            y
+        ))
     }
 }
